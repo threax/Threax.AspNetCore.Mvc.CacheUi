@@ -23,7 +23,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
             this.viewEngine = viewEngine;
         }
 
-        public async Task<CacheUiResult> Build(Controller controller, string cacheToken = null, string view = null, object model = null)
+        public async Task<CacheUiResult> Build(Controller controller, string view = null, object model = null, string cacheToken = null)
         {
             controller.ViewData.Model = model;
 
