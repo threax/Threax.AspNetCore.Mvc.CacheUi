@@ -16,11 +16,13 @@ namespace Threax.AspNetCore.Mvc.CacheUi
 
         private readonly CacheUiConfig cacheUiConfig;
         private readonly ICompositeViewEngine viewEngine;
+        private readonly ICacheUiRenderData renderData;
 
-        public CacheUiBuilder(CacheUiConfig cacheUiConfig, ICompositeViewEngine viewEngine)
+        public CacheUiBuilder(CacheUiConfig cacheUiConfig, ICompositeViewEngine viewEngine, ICacheUiRenderData renderData)
         {
             this.cacheUiConfig = cacheUiConfig;
             this.viewEngine = viewEngine;
+            this.renderData = renderData;
         }
 
         public async Task<CacheUiResult> Build(Controller controller, string view = null, object model = null, string cacheToken = null)
@@ -54,9 +56,13 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 if (!viewCache.TryGetValue(viewKey, out viewString))
                 {
                     //Render and escape view
-                    controller.ViewData["Layout"] = "_Embedded";
+                    renderData.Layout = "_Embedded";
                     viewString = await this.RenderView(controller, view);
                     viewString = $"document.write(`{EscapeTemplateString(viewString)}`);";
+                    if(renderData.Title != null)
+                    {
+                        viewString += $"document.title =`{EscapeTemplateString(renderData.Title)} ` + document.title;";
+                    }
                     viewString = viewCache.GetOrAdd(viewKey, viewString);
                 }
 
@@ -83,9 +89,8 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 controller.HttpContext.Response.Headers["Cache-Control"] = "no-store"; //No caching for the entry page.
 
                 //Create result
-                controller.ViewData["Layout"] = "_Layout";
-                controller.ViewData["Title"] = action;
-                controller.ViewData["ContentLink"] = controller.Url.CacheUiActionLink(action, controller.GetType());
+                renderData.Layout = "_Layout";
+                renderData.ContentLink = controller.Url.CacheUiActionLink(action, controller.GetType());
                 return new CacheUiResult()
                 {
                     UsingCacheRoot = true,

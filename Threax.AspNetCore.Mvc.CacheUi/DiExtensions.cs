@@ -20,15 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var services = builder.Services;
             services.TryAddSingleton<CacheUiConfig>(options);
-            services.TryAddScoped<ICacheUiBuilder>(s =>
-            {
-                ICacheUiBuilder builder = new CacheUiBuilder(s.GetRequiredService<CacheUiConfig>(), s.GetRequiredService<ICompositeViewEngine>());
-                if(options.CustomizeCacheBuilder != null)
-                {
-                    builder = options.CustomizeCacheBuilder?.Invoke(s, builder);
-                }
-                return builder;
-            });
+            services.TryAddScoped<ICacheUiRenderData, CacheUiRenderData>();
+            services.TryAddScoped<ICacheUiBuilder, CacheUiBuilder>();
 
             return services;
         }
