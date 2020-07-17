@@ -56,7 +56,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 if (!viewCache.TryGetValue(viewKey, out viewString))
                 {
                     //Render and escape view
-                    renderData.Layout = config.EmbeddedLayout;
+                    renderData.Layout = config.CachePageLayout;
                     viewString = await this.RenderView(controller, view);
                     viewString = $"document.write(`{EscapeTemplateString(viewString)}`);";
                     if(renderData.Title != null)
