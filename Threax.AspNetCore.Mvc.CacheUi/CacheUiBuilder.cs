@@ -23,9 +23,14 @@ namespace Threax.AspNetCore.Mvc.CacheUi
             this.viewEngine = viewEngine;
         }
 
-        public async Task<CacheUiResult> HandleCache(Controller controller, string cacheToken, string view = null, object model = null)
+        public async Task<CacheUiResult> Build(Controller controller, string cacheToken = null, string view = null, object model = null)
         {
             controller.ViewData.Model = model;
+
+            if (cacheToken == null)
+            {
+                cacheToken = controller.Request.RouteValues["cacheToken"]?.ToString();
+            }
 
             var action = controller.Request.RouteValues["action"]?.ToString();
             if (action == null)

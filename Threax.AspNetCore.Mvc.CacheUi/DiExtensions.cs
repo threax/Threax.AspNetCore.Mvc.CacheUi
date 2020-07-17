@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
@@ -19,7 +20,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var services = builder.Services;
             services.TryAddSingleton<CacheUiConfig>(options);
-            services.TryAddScoped<ICacheUiBuilder, CacheUiBuilder>();
+            services.TryAddScoped<ICacheUiBuilder>(s =>
+            {
+                ICacheUiBuilder builder = new CacheUiBuilder(s.GetRequiredService<CacheUiConfig>(), s.GetRequiredService<ICompositeViewEngine>());
+                if(options.CustomizeCacheBuilder != null)
+                {
+                    builder = options.CustomizeCacheBuilder?.Invoke(s, builder);
+                }
+                return builder;
+            });
 
             return services;
         }
