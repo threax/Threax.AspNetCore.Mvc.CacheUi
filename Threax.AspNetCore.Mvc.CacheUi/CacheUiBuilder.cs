@@ -14,13 +14,13 @@ namespace Threax.AspNetCore.Mvc.CacheUi
     {
         private static readonly ConcurrentDictionary<String, String> viewCache = new ConcurrentDictionary<string, string>();
 
-        private readonly CacheUiConfig cacheUiConfig;
+        private readonly CacheUiConfig config;
         private readonly ICompositeViewEngine viewEngine;
         private readonly ICacheUiRenderData renderData;
 
-        public CacheUiBuilder(CacheUiConfig cacheUiConfig, ICompositeViewEngine viewEngine, ICacheUiRenderData renderData)
+        public CacheUiBuilder(CacheUiConfig config, ICompositeViewEngine viewEngine, ICacheUiRenderData renderData)
         {
-            this.cacheUiConfig = cacheUiConfig;
+            this.config = config;
             this.viewEngine = viewEngine;
             this.renderData = renderData;
         }
@@ -56,20 +56,20 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 if (!viewCache.TryGetValue(viewKey, out viewString))
                 {
                     //Render and escape view
-                    renderData.Layout = "_Embedded";
+                    renderData.Layout = config.EmbeddedLayout;
                     viewString = await this.RenderView(controller, view);
                     viewString = $"document.write(`{EscapeTemplateString(viewString)}`);";
                     if(renderData.Title != null)
                     {
-                        viewString += $"document.title =`{EscapeTemplateString(renderData.Title)} ` + document.title;";
+                        viewString += String.Format(config.TitleFormat, EscapeTemplateString(renderData.Title));
                     }
                     viewString = viewCache.GetOrAdd(viewKey, viewString);
                 }
 
                 //Handle cache mode
-                if (cacheToken != cacheUiConfig.NoCacheModeToken)
+                if (cacheToken != config.NoCacheModeToken)
                 {
-                    controller.HttpContext.Response.Headers["Cache-Control"] = cacheUiConfig.CacheControlHeader;
+                    controller.HttpContext.Response.Headers["Cache-Control"] = config.CacheControlHeader;
                 }
                 else
                 {
@@ -89,12 +89,11 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 controller.HttpContext.Response.Headers["Cache-Control"] = "no-store"; //No caching for the entry page.
 
                 //Create result
-                renderData.Layout = "_Layout";
                 renderData.ContentLink = controller.Url.CacheUiActionLink(action, controller.GetType());
                 return new CacheUiResult()
                 {
                     UsingCacheRoot = true,
-                    ActionResult = controller.View("CacheRoot")
+                    ActionResult = controller.View(config.CacheRootView)
                 };
             }
         }
