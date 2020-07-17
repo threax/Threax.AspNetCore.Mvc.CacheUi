@@ -26,11 +26,11 @@ namespace Threax.AspNetCore.Mvc.CacheUi
         /// <summary>
         /// The name of the cache root page. This is rendered in place of the content we want to cache on the client side. Default '_CacheRoot'
         /// </summary>
-        public object CacheRootView { get; set; } = "_CacheRoot";
+        public String CacheRootView { get; set; } = "_CacheRoot";
 
         /// <summary>
         /// The name of the layout to use when rendering an embedded page. This is the root page used when sending the rendered view javascript to get cached. Default: '_CachePage'
         /// </summary>
-        public string CachePageLayout { get; set; } = "_CachePage";
+        public String CachePageLayout { get; set; } = "_CachePage";
     }
 }

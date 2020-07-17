@@ -86,7 +86,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
 
                 //Create result
                 renderData.ContentLink = controller.Url.CacheUiActionLink(action, controller.GetType());
-                return controller.View(config.CacheRootView);
+                return controller.View(viewName: config.CacheRootView);
             }
         }
 
