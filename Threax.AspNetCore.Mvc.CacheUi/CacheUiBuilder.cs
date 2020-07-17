@@ -25,7 +25,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
             this.renderData = renderData;
         }
 
-        public async Task<CacheUiResult> Build(Controller controller, string view = null, object model = null, string cacheToken = null)
+        public async Task<IActionResult> Build(Controller controller, string view = null, object model = null, string cacheToken = null)
         {
             controller.ViewData.Model = model;
 
@@ -77,11 +77,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                 }
 
                 //Create result
-                return new CacheUiResult()
-                {
-                    UsingCacheRoot = false,
-                    ActionResult = controller.Content(viewString, "application/javascript")
-                };
+                return controller.Content(viewString, "application/javascript");
             }
             else
             {
@@ -90,11 +86,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
 
                 //Create result
                 renderData.ContentLink = controller.Url.CacheUiActionLink(action, controller.GetType());
-                return new CacheUiResult()
-                {
-                    UsingCacheRoot = true,
-                    ActionResult = controller.View(config.CacheRootView)
-                };
+                return controller.View(config.CacheRootView);
             }
         }
 

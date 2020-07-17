@@ -21,8 +21,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
 
         public async Task<IActionResult> CacheUiView(string view = null, object model = null, string cacheToken = null)
         {
-            var result = await this.CacheUiBuilder.Build(this, view, model, cacheToken);
-            return result.ActionResult;
+            return await this.CacheUiBuilder.Build(this, view, model, cacheToken);
         }
     }
 }
