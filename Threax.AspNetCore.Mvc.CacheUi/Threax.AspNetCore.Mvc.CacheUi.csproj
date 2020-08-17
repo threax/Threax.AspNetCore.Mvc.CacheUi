@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A caching ui implementation for Razor in .Net Core.</Description>
-    <Version>3.0.1</Version>
+    <Version>3.0.2</Version>
     <PackageReleaseNotes>Changed api around some. Added more configuration. Changed names of root pages. Added support for titles.</PackageReleaseNotes>
   </PropertyGroup>
 

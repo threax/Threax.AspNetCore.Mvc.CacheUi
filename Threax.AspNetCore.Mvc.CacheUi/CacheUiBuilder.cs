@@ -47,12 +47,13 @@ namespace Threax.AspNetCore.Mvc.CacheUi
 
             controller.Request.RouteValues.Remove("cacheToken");
             controller.RouteData.Values.Remove("cacheToken");
-            if (cacheToken != null) //Cache and return as js if we have a token
+            if (cacheToken != null) //If there is a token handle the view like normal
             {
                 //Get cached view
                 var viewKey = $"{controller.GetType().FullName}|{action}|{view}";
 
                 String viewString;
+                //Always render if not in the cache
                 if (!viewCache.TryGetValue(viewKey, out viewString))
                 {
                     //Render and escape view
@@ -63,7 +64,11 @@ namespace Threax.AspNetCore.Mvc.CacheUi
                     {
                         viewString += String.Format(config.TitleFormat, EscapeTemplateString(renderData.Title));
                     }
-                    viewString = viewCache.GetOrAdd(viewKey, viewString);
+
+                    if (cacheToken != config.NoCacheModeToken) //Only cache the view when not in nocache mode. Otherwise take as is.
+                    {
+                        viewString = viewCache.GetOrAdd(viewKey, viewString);
+                    }
                 }
 
                 //Handle cache mode
@@ -81,6 +86,7 @@ namespace Threax.AspNetCore.Mvc.CacheUi
             }
             else
             {
+                //Otherwise send root view, which will use the cache or request the rest of the page from the server
                 //Handle cache mode
                 controller.HttpContext.Response.Headers["Cache-Control"] = "no-store"; //No caching for the entry page.
 
