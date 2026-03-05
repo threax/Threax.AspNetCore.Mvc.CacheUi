@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DiExtensions
     {
-        public static IServiceCollection AddThreaxCacheUi(this IMvcBuilder builder, String cacheToken, Action<CacheUiConfig> configureOptions = null)
+        public static IMvcBuilder AddThreaxCacheUi(this IMvcBuilder builder, String cacheToken, Action<CacheUiConfig> configureOptions = null)
         {
             var options = new CacheUiConfig();
             configureOptions?.Invoke(options);
@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<ICacheUiRenderData, CacheUiRenderData>();
             services.TryAddScoped<ICacheUiBuilder, CacheUiBuilder>();
 
-            return services;
+            return builder;
         }
     }
 }
